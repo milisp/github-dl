@@ -4,6 +4,8 @@
 
 > 下载 github 某个文件夹或文件，可以断点续传
 
+[api](https://docs.github.com/en/rest/repos/contents) - github contents api
+
 ## Install
 
 ```sh
