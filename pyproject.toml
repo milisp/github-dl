@@ -1,5 +1,5 @@
 [project]
-name = "github-dl"
+name = "github-file-dl"
 version = "0.1.0"
 description = "download github folder or file."
 authors = [
@@ -21,4 +21,4 @@ build-backend = "pdm.backend"
 distribution = true
 
 [project.scripts]
-github-dl = "github_dl.__main__:main"
+github-file-dl = "github_file_dl.__main__:main"

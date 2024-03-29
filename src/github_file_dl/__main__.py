@@ -84,9 +84,8 @@ def dl(source_url, args):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="github-dl",
+        prog="github-file-dl",
         description="download github folder or file",
-        epilog="bottom help",
     )
     parser.add_argument("url", help="github folder url or file")
     parser.add_argument("-p", "--proxy", help="https_prxoy url")
