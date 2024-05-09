@@ -24,11 +24,13 @@ def url_to_api(url: str):
 
 
 def download_file(url, file_name, proxy="", _dir=""):
+    if not _dir:
+        _dir = "."
     if proxy:
         proxies = {"https_proxy": proxy}
     else:
         proxies = None
-    with requests.get(url, stream=True, proxies=proxies) as response:
+    with requests.get(url, stream=True, proxies=proxies, timeout=10) as response:
         file_path = Path(_dir) / file_name
         parent_path = file_path.parent
         if not parent_path.exists():
