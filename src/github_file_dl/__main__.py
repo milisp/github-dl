@@ -23,14 +23,18 @@ def url_to_api(url: str):
         exit(1)
 
 
-def download_file(url, file_name, proxy="", _dir=""):
+def download_file(url, file_name, ignore_path, proxy="", _dir=""):
     if not _dir:
         _dir = "."
     if proxy:
         proxies = {"https_proxy": proxy}
     else:
         proxies = None
-    with requests.get(url, stream=True, proxies=proxies, timeout=10) as response:
+    print(file_name, ignore_path)
+    if ignore_path != '/':
+        file_name = file_name.replace(ignore_path, '')
+    print(file_name)
+    with requests.get(url, stream=True, proxies=proxies, timeout=3) as response:
         file_path = Path(_dir) / file_name
         parent_path = file_path.parent
         if not parent_path.exists():
@@ -47,6 +51,8 @@ def vprint(args, *s):
 
 def dl(source_url, args):
     url = url_to_api(source_url)
+    us = source_url.split("/")
+    ignore_path = '/'.join(us[7:-1]) + '/'
     if args.proxy:
         proxies = {"https_proxy": args.proxy}
     else:
@@ -54,14 +60,13 @@ def dl(source_url, args):
     r = requests.get(url, proxies=proxies)
     data = r.json()
     if isinstance(data, dict):
-        download_file(data["download_url"], data["path"], args.proxy, args.dir)
+        download_file(data["download_url"], data["path"], ignore_path, args.proxy, args.dir)
     elif isinstance(data, list):
         for p in data:
             durl = p["download_url"]
             vprint(args, durl)
             if durl:
                 extension = p["path"].rsplit(".")[-1].lower()
-                path = Path(p["path"])
                 if args.skip_audio:
                     if extension in AUDIO:
                         continue
@@ -74,9 +79,10 @@ def dl(source_url, args):
                 if args.skip_media:
                     if extension in f"{AUDIO} {IMAGE} {VIDEO}":
                         continue
+                path = Path(p["path"])
                 vprint(args, "dl", path)
                 if not path.exists() or p["size"] != path.stat().st_size:
-                    download_file(durl, path, args.proxy, args.dir)
+                    download_file(durl, p['path'], ignore_path, args.proxy, args.dir)
             else:
                 vprint(args, p["html_url"])
                 dl(p["html_url"], args)
@@ -102,7 +108,7 @@ def main():
 
     args = parser.parse_args()
     print(args.url, args)
-    dl(url_to_api(args.url), args)
+    dl(args.url, args)
 
 
 if __name__ == "__main__":
